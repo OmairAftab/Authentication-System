@@ -12,7 +12,7 @@ const register=async(req,res)=>{
     const {name,email,password} =req.body;
 
     if(!name || !email || !password){
-        return res.status(400).json("Required Details are missing")
+        return res.status(400).json({success: false, message: "Required Details are missing"})
     }
 
 
@@ -21,7 +21,7 @@ const register=async(req,res)=>{
         //check of yser already exist
         const existingUser=await UserModel.findOne({email});
         if(existingUser){
-            return res.status(400).json("User already exists")
+            return res.status(400).json({success: false, message: "User already exists"})
         }
 
         const hashedpassword= await bcrypt.hash(password, 5);
@@ -56,12 +56,12 @@ const register=async(req,res)=>{
         await transporter.sendMail(mailOptions);
 
 
-        return res.status(200).json("Success.User Registered successfully")
+        return res.status(200).json({success: true, message: "User Registered successfully"})
   
   
     }
     catch(err){
-        res.json(err)
+        res.json({success: false, message: err.message || "An error occurred"})
     }
 }
 
@@ -76,7 +76,7 @@ const login= async (req,res)=>{
     const {email,password}=req.body;
 
     if(!email || !password){
-        return res.status(400).json("Both email ad apssword are required");
+        return res.status(400).json({success: false, message: "Both email and password are required"});
     }
 
 
@@ -85,13 +85,13 @@ const login= async (req,res)=>{
         const user =await UserModel.findOne({email});
 
         if(!user){
-            return res.status(404).json("Invalid email. User doesn't exist");
+            return res.status(404).json({success: false, message: "Invalid email. User doesn't exist"});
         }
 
         const isMatch=await bcrypt.compare(password, user.password);
 
         if(!isMatch){
-            return res.status(400).json("Invalid password")
+            return res.status(400).json({success: false, message: "Invalid password"})
         }
 
 
@@ -109,7 +109,7 @@ const login= async (req,res)=>{
         })
 
 
-        return res.status(201).json("Success.User logged in")
+        return res.status(200).json({success: true, message: "User logged in successfully"})
 
 
 
@@ -139,10 +139,10 @@ const logout=(req,res)=>{
             maxAge: 7*24*60*60*100 //7 days written in milliseconds
         })
 
-        return res.status(200).json("LOGGED OUT SUCCESSFULLY");
+        return res.status(200).json({success: true, message: "Logged out successfully"});
 
     }catch(err){
-        return res.json(err);
+        return res.json({success: false, message: err.message || "Logout error"});
     }
 }
 
@@ -160,17 +160,17 @@ const sendVerifyOtp= async (req,res)=>{
         const {userId} =req.body;
 
         if(!userId){
-            return res.status(400).json({error: 'Missing userId in request'});
+            return res.status(400).json({success: false, message: 'Missing userId in request'});
         }
 
         const user=await UserModel.findById(userId);
         
         if(!user){
-           return res.status(404).json({error: 'User not found'});
+           return res.status(404).json({success: false, message: 'User not found'});
         }
 
         if(user.isVerified){ //user is already verified
-            return res.status(409).json({error: 'User is already verified'})
+            return res.status(409).json({success: false, message: 'User is already verified'})
         }
 
         //generate a random 6 digit otp
@@ -196,17 +196,17 @@ const sendVerifyOtp= async (req,res)=>{
         try{
             const info = await transporter.sendMail(mailOptions);
             console.log('OTP email sent:', info.response || info.messageId || info);
-            return res.status(200).json({message: `Verification OTP sent on Email ${user.email}. The OTP is valid only for 1 minute`});
+            return res.status(200).json({success: true, message: `Verification OTP sent on Email ${user.email}. The OTP is valid only for 1 minute`});
         }catch(mailErr){
             console.error('Error sending OTP email:', mailErr);
-            return res.status(502).json({error: 'Failed to send email', details: mailErr.message});
+            return res.status(502).json({success: false, message: 'Failed to send email'});
         }
 
     }
     catch(err){
 
         console.log("SEND OTP ERROR:", err);
-       return res.status(500).json(err.message);
+       return res.status(500).json({success: false, message: err.message || "Error sending OTP"});
 
     }
 
@@ -223,7 +223,7 @@ const verifyemail= async (req,res)=>{
     const {userId,otp} =req.body;
 
     if(!userId || !otp){
-        return res.status(400).json("Missing details")
+        return res.status(400).json({success: false, message: "Missing details"})
     }
 
     try{
@@ -231,17 +231,13 @@ const verifyemail= async (req,res)=>{
         const user= await UserModel.findById(userId);
 
         if(!user){
-            return res.status(404).json("User not found");
-        }
-
-
-        if(user.verifyOtp ==='' || user.verifyOtp !==otp){
-            return res.status(400).json("Invalid OTP")
+            return res.status(404).json({success: false, message: "User not found"});
+            return res.status(400).json({success: false, message: "Invalid OTP"})
         }
 
         //at this point user exist, otp is correct . Now checking that if otp is still usable
         if(user.verifyOtpExpireAt < Date.now()){
-            return res.status(400).json("OTP EXPIRED")
+            return res.status(400).json({success: false, message: "OTP EXPIRED"})
         }
 
 
@@ -255,11 +251,11 @@ const verifyemail= async (req,res)=>{
         await user.save(); //update user
 
 
-        return res.status(200).json('Email Verified Successfully')
+        return res.status(200).json({success: true, message: 'Email Verified Successfully'})
 
     }
     catch(err){
-        return res.status(500).json(err)
+        return res.status(500).json({success: false, message: err.message || "Error verifying email"})
 
     }
 }
@@ -293,7 +289,7 @@ const sendResetOTP = async (req,res)=>{
     const {email} =req.body;
 
     if(!email){
-        return res.status(400).json("Email is Required")
+        return res.status(400).json({success: false, message: "Email is Required"})
     }
 
 
@@ -327,16 +323,16 @@ const sendResetOTP = async (req,res)=>{
 
         try{
             await transporter.sendMail(mailOptions);
-            return res.status(200).json({message: `PASSWORD RESET OTP sent on Email ${user.email}. The OTP is valid only for 2 minutes`});
+            return res.status(200).json({success: true, message: `PASSWORD RESET OTP sent on Email ${user.email}. The OTP is valid only for 2 minutes`});
         }catch(mailErr){
             console.error('Error sending OTP email:', mailErr);
-            return res.status(502).json({error: 'Failed to send email', details: mailErr.message});
+            return res.status(502).json({success: false, message: 'Failed to send email'});
         }
 
 
     }
     catch(error){
-        return res.status(400).json({error: "Error is : ", details: err.message});
+        return res.status(400).json({success: false, message: "Error occurred while sending reset OTP"});
 
     }
 }
@@ -354,7 +350,7 @@ const resetPassword= async (req,res)=>{
     const {email, otp , newPassword} =req.body;
 
     if(!email || !otp || !newPassword){
-        return  res.status(400).json("EMAIL, PASSWORD AND OTP ARE REQUIRED")
+        return  res.status(400).json({success: false, message: "EMAIL, PASSWORD AND OTP ARE REQUIRED"})
     }
 
 
@@ -367,12 +363,12 @@ const resetPassword= async (req,res)=>{
         }
  
         if(user.resetOtp==='' || user.resetOtp!==otp){       //user.resetOTP wo hai jo store db main jb hum otp mngvane k liye is se upar wala function call kren ge ... and ye jo sirf otp likha hai ye is request k doran user de ga
-             return res.status(400).json("Invalid OTP")
+             return res.status(400).json({success: false, message: "Invalid OTP"})
         }
 
         //at this point user exist, otp is correct . Now checking that if otp is still usable
         if(user.resetOtpExpireAt < Date.now()){
-            return res.status(400).json("OTP EXPIRED")
+            return res.status(400).json({success: false, message: "OTP EXPIRED"})
         }
 
 
@@ -388,10 +384,10 @@ const resetPassword= async (req,res)=>{
 
         await user.save();
 
-        return res.status(200).json("PASSWORD UPDATED SUCCESSFULLY");
+        return res.status(200).json({success: true, message: "Password updated successfully"});
     }
     catch(err){
-        return res.status(400).json({error: "Error is : ", details: err.message});       
+        return res.status(500).json({success: false, message: err.message || "Error resetting password"});       
     }
 }
 

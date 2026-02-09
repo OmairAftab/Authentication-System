@@ -4,10 +4,12 @@ import Home from './Pages/Home'
 import Login from './Pages/Login'
 import VerifyEmail from './Pages/VerifyEmail'
 import ResetPassword from './Pages/ResetPassword'
+  import { ToastContainer, toast } from 'react-toastify';
 
 const App = () => {
   return (
     <div style={{padding: '20px', fontSize: '24px'}}>
+      <ToastContainer />
       <Routes>
         <Route path='/' element={<Home />}/>
         <Route path='/login' element={<Login />}/>

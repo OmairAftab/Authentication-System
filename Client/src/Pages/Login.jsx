@@ -2,6 +2,9 @@ import React, { useContext, useState } from 'react'
 import { assets } from '../assets/mern-assets/assets'
 import {useNavigate} from 'react-router-dom'
 import { AppContext } from '../Context/AppContext'
+import axios from 'axios';
+import {toast } from 'react-toastify';
+
 
 const Login = () => {
 
@@ -14,10 +17,46 @@ const Login = () => {
   const[email,setEmail]=useState('')
   const[password,setPassword]=useState('')
 
-  return (
-<div className="flex items-center justify-center min-h-screen px-6 sm:px-0 bg-[radial-gradient(circle_at_top,#ede9fe,#ffffff,#f5f3ff)]">
+//FUNCTION THAT WILL RUN WHEN WE WILL SUBMIT FORMA
+  const onSubmitHandler=async (e)=>{
+    try{
 
-       <img src={assets.logo} onClick={()=>{navigate('/')}} alt=""  className='absolute left-5 sm:left-20 top-5 w-28 sm:w-32 cursor-pointer'/>
+      e.preventDefault();
+
+      axios.defaults.withCredentials=true; //SEND COOKIES AS WELL
+
+        if(state==='Sign Up'){
+          const {data}= await axios.post(backendUrl + '/api/auth/register' , {name,email,password})
+          
+          if(data.success){
+            setisLoggedin(true);
+            navigate('/')
+          }else{
+            toast.error(data.message);
+          }
+        }
+        else{
+          const {data}= await axios.post(backendUrl + '/api/auth/login' , {email,password})
+          
+          if(data.success){
+            setisLoggedin(true);
+            navigate('/')
+          }else{
+            toast.error(data.message);
+          }
+        }
+    }
+    catch(err){
+      toast.error(err.response?.data?.message || err.message || 'An error occurred');
+    }
+  }
+
+
+  return (
+
+      <div className="flex items-center justify-center min-h-screen px-6 sm:px-0 bg-[radial-gradient(circle_at_top,#ede9fe,#ffffff,#f5f3ff)]">
+
+         <img src={assets.logo} onClick={()=>{navigate('/')}} alt=""  className='absolute left-5 sm:left-20 top-5 w-28 sm:w-32 cursor-pointer'/>
     
        <div className='bg-slate-900 p-10 rounded-lg shadow-lg w-full sm:w-96 text-indigo-300 text-sm'>
 
@@ -27,7 +66,7 @@ const Login = () => {
 
 
 {/* FORM */}
-          <form action="">
+          <form action="" onSubmit={onSubmitHandler}>
 
             {/* jb state signup ho gi tab hee fullname required hoga nhi to agar login krna a to bs email and password hee chahiyen             */}
             
