@@ -1,13 +1,17 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { assets } from '../assets/mern-assets/assets'
+import { AppContext } from '../Context/AppContext'
 
 const Header = () => {
+
+  const {userData} =useContext(AppContext)
+
   return (
     <div className='flex flex-col items-center text-center text-gray-800'> 
 
         <img src={assets.header_img} alt="" className='w-36 h-36 rounded-full mt-4' />
 
-        <h1 className='flex gap-1 text-xl sm:text-3xl font-medium mb-3'>Hey Developer 
+        <h1 className='flex gap-1 text-xl sm:text-3xl font-medium mb-3'>Hey {userData   ? userData.name : 'Developer'}
             
             <img src={assets.hand_wave} alt="" className='w-8 aspect-square'/>
         

@@ -10,7 +10,7 @@ const Login = () => {
 
   const navigate=useNavigate()
 
-  const {backendUrl,setisLoggedin }= useContext(AppContext)
+  const {backendUrl,setisLoggedin, getUserData }= useContext(AppContext)
 
   const [state,setState] =useState('Sign Up') //default signup page
   const[name,setName]=useState('')
@@ -30,6 +30,7 @@ const Login = () => {
           
           if(data.success){
             setisLoggedin(true);
+            getUserData()
             navigate('/')
           }else{
             toast.error(data.message);
@@ -40,6 +41,7 @@ const Login = () => {
           
           if(data.success){
             setisLoggedin(true);
+            getUserData()
             navigate('/')
           }else{
             toast.error(data.message);
