@@ -35,10 +35,10 @@ const register=async(req,res)=>{
         const token=jwt.sign({id: user._id} , process.env.JWT_SECRET , {expiresIn: '7d'}) ///user.id jo bnti hai db main like ._id
         
 
-        //now we have to send this token to user in res and  we will send bby cookie
+        //now we have to send this token to user in res and  we will send by cookie
         res.cookie('token', token, {
             httpOnly:true,
-            secure: process.env.NODE_ENV === 'production', //hum ne env main NODE_ENV ko =local host rkha hai .. to is line k amtlb ye hai k secure tb hoga jb node_env production k equal ho and localhost pe secure ni hoga
+            secure: process.env.NODE_ENV === 'production', //hum ne env main NODE_ENV ko =local host rkha hai .. to is line ka mtlb ye hai k secure tb hoga jb node_env production k equal ho and localhost pe secure ni hoga
             sameSite : process.env.NODE_ENV === 'production' ? 'none': 'strict', //samesite will be strict in local host as both the forntend and backend eill run on the same server . but in the case of production we wont be hosting frontend and backend on same place so in that case the samesite will be none
             maxAge: 7*24*60*60*100 //7 days written in milliseconds
         
@@ -232,7 +232,6 @@ const verifyemail= async (req,res)=>{
 
         if(!user){
             return res.status(404).json({success: false, message: "User not found"});
-            return res.status(400).json({success: false, message: "Invalid OTP"})
         }
 
         //at this point user exist, otp is correct . Now checking that if otp is still usable

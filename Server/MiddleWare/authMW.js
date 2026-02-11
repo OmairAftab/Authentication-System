@@ -18,8 +18,6 @@ const authMW =async (req,res, next)=>{
     try{
 
         const decodedtoken= jwt.verify(token, process.env.JWT_SECRET)
-
-        // console.log("Decoded Token:", decodedtoken);
  
         if(decodedtoken.id){
             // Initialize req.body if it's undefined
@@ -29,7 +27,6 @@ const authMW =async (req,res, next)=>{
 
             req.body.userId=decodedtoken.id;
 
-            // console.log("Injected userId:", req.body.userId);
             
             return next();
         }
