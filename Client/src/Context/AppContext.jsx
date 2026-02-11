@@ -10,6 +10,8 @@ export const AppContextProvider=(props)=>{
     const[isLoggedin,setisLoggedin]=useState(false);
     const[userData,setuserData]=useState(false);
 
+
+
     // Configure axios to send cookies with requests
     axios.defaults.withCredentials = true;
 
@@ -29,11 +31,44 @@ export const AppContextProvider=(props)=>{
         }
     }
 
+
+
+    
+
+    const getAuthState= async()=>{
+        try{
+            const {data} =await axios.get(backendUrl + '/api/auth/is-authenticated')
+
+             if(data.success){
+                setisLoggedin(true);
+                getUserData();
+            } else {
+                toast.error(data.message);
+            }
+            
+
+        }
+        catch(error){
+            toast.error(error.message);
+        }
+    }
+
+
+
+
+
+
     // Fetch user data on component mount
     useEffect(() => {
         getUserData();
     }, []);
 
+
+    
+    //get authentication state on every reload
+    useEffect(() => {
+        getAuthState();
+    }, []);
 
 
     const value={
