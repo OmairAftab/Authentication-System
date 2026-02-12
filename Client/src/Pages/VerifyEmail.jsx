@@ -1,13 +1,18 @@
 import React from 'react'
 import { assets } from '../assets/mern-assets/assets'
 import {useNavigate} from 'react-router-dom'
+import { useContext } from 'react'
+import { AppContext } from '../Context/AppContext'
+import { toast } from 'react-toastify'
+import axios from 'axios'
 
 
 const VerifyEmail = () => {
 
     const navigate=useNavigate()
     const inputRefs= React.useRef([]) //it is used to store references of multiple input boxes
-
+    const {backendUrl,isLoggedin,userData,getUserData}=useContext(AppContext)
+    axios.defaults.withCredentials = true;
 
 
 
@@ -17,7 +22,6 @@ const VerifyEmail = () => {
         inputRefs.current[index+1].focus() //jb hum aik field main number likh len ge to automatically next box pe focus ho jae ga and now we can type in next box
       }
     }
-
 
 
 
@@ -45,13 +49,45 @@ const VerifyEmail = () => {
 
 
 
+//FUNCTIONLITY APPLY ON "VERIFY EMAIL BUTTON" TO VERIFY THE OTP 
+
+    const onSubmitHandler= async (e)=>{
+      try{
+        e.preventDefault();
+        const otpArray=inputRefs.current.map(e=>e.value)
+        const otp=otpArray.join('')
+
+        //now send this otp to backend to verify otp
+        const {data} = await axios.post(backendUrl + '/api/auth/verify-account' , {otp})
+        
+        if(data.success){ //if this run mean otp is correct and account is verified
+          toast.success(data.message)
+          getUserData()
+          navigate('/')
+        }
+        else{
+          toast.error(data.message)
+        }
+
+      }
+      catch(error){
+        const message = error?.response?.data?.message || error?.message || 'Something went wrong'
+        toast.error(message)
+      }
+    }
+
+
+
+
+
+
 
   return (
     <div className="flex items-center justify-center min-h-screen px-6 sm:px-0 bg-[radial-gradient(circle_at_top,#ede9fe,#ffffff,#f5f3ff)]">
 
       <img src={assets.logo} onClick={()=>{navigate('/')}} alt=""  className='absolute left-5 sm:left-20 top-5 w-28 sm:w-32 cursor-pointer'/>
       
-      <form className='bg-slate-800 p-8 rounded-lg w-96 text-sm'>
+      <form onSubmit={onSubmitHandler} className='bg-slate-800 p-8 rounded-lg w-96 text-sm'>
         <h1 className='text-white text-2xl font-semibold text-center mb-4'>Verify Email otp</h1>
         <p className='text-center mb-6 text-indigo-200'>Enter a 6-digit code sent to your email id</p>
         <div className='flex justify-between mb-8' onPaste={handlePaste}>
