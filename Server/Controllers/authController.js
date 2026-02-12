@@ -179,7 +179,7 @@ const sendVerifyOtp= async (req,res)=>{
         //user k model main hum ne verifyotp wala aik diya hua us ko update kro
         user.verifyOtp= otp;
 
-        user.verifyOtpExpireAt=Date.now() + 1*60*1000; //1 minute in ms
+        user.verifyOtpExpireAt=Date.now() + 5*60*1000; //5 minute in ms
 
         //user will be saved with updated verifyOtp and verifyOtpExpireAt fields. 
         await user.save();
