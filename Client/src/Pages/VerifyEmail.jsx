@@ -5,6 +5,7 @@ import { useContext } from 'react'
 import { AppContext } from '../Context/AppContext'
 import { toast } from 'react-toastify'
 import axios from 'axios'
+import { useEffect } from 'react'
 
 
 const VerifyEmail = () => {
@@ -13,6 +14,7 @@ const VerifyEmail = () => {
     const inputRefs= React.useRef([]) //it is used to store references of multiple input boxes
     const {backendUrl,isLoggedin,userData,getUserData}=useContext(AppContext)
     axios.defaults.withCredentials = true;
+
 
 
 
@@ -32,6 +34,8 @@ const VerifyEmail = () => {
         inputRefs.current[index-1].focus()
       }
     }
+
+
 
 
 
@@ -76,6 +80,16 @@ const VerifyEmail = () => {
       }
     }
 
+
+
+
+
+
+
+//AGAR USER KA EMAIL VERIFIED HO AND WO /verify-email WALA ROUTE ACCESS KRNA CHAHE TO NA KRNE DO and HOME PAGE PE REDIRECT KRDO
+    useEffect(()=>{
+      isLoggedin && userData && userData.isVerified && navigate('/')
+    },[isLoggedin,userData])
 
 
 
