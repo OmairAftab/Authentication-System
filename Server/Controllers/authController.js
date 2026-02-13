@@ -297,7 +297,7 @@ const sendResetOTP = async (req,res)=>{
         const user=await UserModel.findOne({email});
 
         if(!user){
-            return res.status(400).json("User not found");
+            return res.status(400).json({success: false, message: "User not found"});
         }
 
          //generate a random 6 digit otp
@@ -358,7 +358,7 @@ const resetPassword= async (req,res)=>{
         const user=await UserModel.findOne({email});
 
         if(!user){
-            return res.status(400).json("User not found");
+            return res.status(400).json({success: false, message: "User not found"});
         }
  
         if(user.resetOtp==='' || user.resetOtp!==otp){       //user.resetOTP wo hai jo store db main jb hum otp mngvane k liye is se upar wala function call kren ge ... and ye jo sirf otp likha hai ye is request k doran user de ga

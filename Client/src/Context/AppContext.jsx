@@ -23,11 +23,19 @@ export const AppContextProvider=(props)=>{
                 setuserData(data.userData);
                 setisLoggedin(true);
             } else {
-                toast.error(data.message);
+                // don't spam toast for expected unauthenticated state
+                // (data.message may be 'Not Authorized' when no cookie/token present)
+                console.debug('getUserData:', data.message);
             }
         }
         catch(error){
-            toast.error(error.message);
+            // only show unexpected server errors
+            const status = error?.response?.status;
+            if(!status || status >= 500){
+                toast.error(error.message);
+            } else {
+                console.debug('getUserData error:', error?.response?.data || error.message);
+            }
         }
     }
 
@@ -43,13 +51,18 @@ export const AppContextProvider=(props)=>{
                 setisLoggedin(true);
                 getUserData();
             } else {
-                toast.error(data.message);
+                console.debug('getAuthState:', data.message);
             }
             
 
         }
         catch(error){
-            toast.error(error.message);
+            const status = error?.response?.status;
+            if(!status || status >= 500){
+                toast.error(error.message);
+            } else {
+                console.debug('getAuthState error:', error?.response?.data || error.message);
+            }
         }
     }
 
@@ -58,10 +71,7 @@ export const AppContextProvider=(props)=>{
 
 
 
-    // Fetch user data on component mount
-    useEffect(() => {
-        getUserData();
-    }, []);
+    // Do not call getUserData on mount directly — only fetch after auth check
 
 
     

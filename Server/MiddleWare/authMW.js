@@ -12,7 +12,7 @@ const authMW =async (req,res, next)=>{
     const {token} =req.cookies; 
 
     if(!token){
-        return res.status(400).json("Not Authorized. Login again");
+        return res.status(401).json({success: false, message: 'Not Authorized. Login again'});
     }
 
     try{
@@ -31,7 +31,7 @@ const authMW =async (req,res, next)=>{
             return next();
         }
         else{
-            return res.status(400).json("NOT AUTHORIZED. LOGIN AGAIN")
+            return res.status(401).json({success: false, message: 'Not Authorized. Login again'});
         }
 
     }

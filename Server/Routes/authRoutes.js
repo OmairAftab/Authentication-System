@@ -16,10 +16,12 @@ router.post('/send-verify-otp', authMW ,sendVerifyOtp)
 
 router.post('/verify-account', authMW, verifyemail)
 
-router.post('/is-authenticated', authMW, isAuthenticated)
+// router.post('/is-authenticated', authMW, isAuthenticated)
+router.get('/is-authenticated', authMW, isAuthenticated)
 
 router.post('/send-reset-otp', sendResetOTP)
 
+// public endpoint for resetting password (no auth required)
 router.post('/reset-password', resetPassword)
 
 
