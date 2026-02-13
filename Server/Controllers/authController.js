@@ -3,9 +3,9 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken';
 import UserModel from '../Models/userModels.js'
 import transporter from "../Config/nodemailer.js";
-
-
-
+import welcomeTemplate from "../Templates/WelcomeEmail.js";
+import verifyOtpTemplate from "../Templates/VerifyOTP.js";
+import resetPasswordOtpTemplate from "../Templates/ResetPassOTP.js";
 
 //FUNCTION FOR USER REGISTRATION
 const register=async(req,res)=>{
@@ -50,7 +50,7 @@ const register=async(req,res)=>{
             from: `"Omair's Tech Solutions" <mohammadomair4519@gmail.com>`,
             to: email, //this email jo hum ne request body se li hai
             subject: "Welcome to Omair's Authentication System",
-            text:`Welcome to Omair's Authentication system. Your account has been verified with email ${email}`
+            html: welcomeTemplate(email)
         }
 
         await transporter.sendMail(mailOptions);
@@ -190,13 +190,13 @@ const sendVerifyOtp= async (req,res)=>{
             from: `"Omair's Tech Solutions" <${process.env.SENDER_EMAIL}>`,
             to: user.email, 
             subject: "Account Verification OTP",
-            text:`Your OTP is ${otp}. Verify your account using this OTP`
+            html: verifyOtpTemplate(otp, user.email)
         }
 
         try{
             const info = await transporter.sendMail(mailOptions);
             console.log('OTP email sent:', info.response || info.messageId || info);
-            return res.status(200).json({success: true, message: `Verification OTP sent on Email ${user.email}. The OTP is valid only for 1 minute`});
+            return res.status(200).json({success: true, message: `Verification OTP sent on Email ${user.email}`});
         }catch(mailErr){
             console.error('Error sending OTP email:', mailErr);
             return res.status(502).json({success: false, message: 'Failed to send email'});
@@ -317,12 +317,13 @@ const sendResetOTP = async (req,res)=>{
             from: `"Omair's Tech Solutions" <${process.env.SENDER_EMAIL}>`,
             to: user.email, 
             subject: "PASSWORD RESET OTP",
-            text:`Your OTP is ${otp}. Use this OTP to proceed with resetting your password`
+            html: resetPasswordOtpTemplate(otp, user.email)
+            // text:`Your OTP is ${otp}. Use this OTP to proceed with resetting your password`
         }
 
         try{
             await transporter.sendMail(mailOptions);
-            return res.status(200).json({success: true, message: `PASSWORD RESET OTP sent on Email ${user.email}. The OTP is valid only for 2 minutes`});
+            return res.status(200).json({success: true, message: `PASSWORD RESET OTP sent on Email ${user.email}.`});
         }catch(mailErr){
             console.error('Error sending OTP email:', mailErr);
             return res.status(502).json({success: false, message: 'Failed to send email'});
