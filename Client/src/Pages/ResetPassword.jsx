@@ -98,7 +98,7 @@ const ResetPassword = () => {
 
 
 
-// FUNCTION FOR 3RD FORM
+//  FUNCTION FOR 3RD FORM
    const onSubmitNewPassword = async (e)=>{
     e.preventDefault();
     try{

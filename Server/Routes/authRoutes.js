@@ -12,7 +12,7 @@ router.post('/login',login)
 
 router.post('/logout',logout)
 
-router.post('/send-verify-otp', authMW ,sendVerifyOtp)
+router.post('/send-verify-otp', authMW , sendVerifyOtp)
 
 router.post('/verify-account', authMW, verifyemail)
 

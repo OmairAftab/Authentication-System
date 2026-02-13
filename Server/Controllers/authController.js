@@ -267,7 +267,7 @@ const verifyemail= async (req,res)=>{
 
 
 //CHECK IF USER IS AUTHENTICATED
-const isAuthenticated = (req,res)=>{
+const isAuthenticated =(req,res)=>{
     //hum route bnate hue beech main authMW use kren ge so agar cookie main token available hua mean ser is authenticated
     //AS WE R USING MIDDLEWARE BETWEEN WHEN MAKING ITS ROUTE. The middleware already validated the token, so if we reach here, user is authenticated
     return res.status(200).json({success: true, message: "User is Authenticated"})

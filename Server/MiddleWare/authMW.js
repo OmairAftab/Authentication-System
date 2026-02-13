@@ -9,7 +9,7 @@ const authMW =async (req,res, next)=>{
 
 
     //it will find token from the cookie
-    const {token} =req.cookies; 
+    const {token}=req.cookies; 
 
     if(!token){
         return res.status(401).json({success: false, message: 'Not Authorized. Login again'});
