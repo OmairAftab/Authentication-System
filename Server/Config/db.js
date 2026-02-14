@@ -1,10 +1,11 @@
 import mongoose from 'mongoose';
 
 //desine the mongodb connection url
-const mongoURL='mongodb://localhost:27017/mern-auth'; //local url
-// const mongoURL='mongodb+srv://Mohammad Omair Aftab:Mong00000@cluster0.i9g2cgl.mongodb.net/'; //online mongodbatlas se connect hua ye.  AIK TIME PE AIK E CHALE GA
+// const mongoURL='mongodb://localhost:27017/mern-auth'; //local url
+const mongoURL=process.env.MONGODB_URL; //online mongodbatlas se connect hua ye.  AIK TIME PE AIK E CHALE GA
 
-//  YE CODE main is k andar b kuch cheezen likhi th but in new version they arenot required
+
+
 mongoose.connect(mongoURL);
 
 
